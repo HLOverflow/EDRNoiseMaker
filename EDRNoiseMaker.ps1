@@ -33,12 +33,15 @@ function Get-WfpFilterData {
                 $filter_id = $filter.FilterId  
                 $filter_action_type = $filter.ActionType
                 $filter_name = $filter.Name
+                $filter_layerkeyname = $filter.LayerKeyName
 
                 $result += [PSCustomObject]@{
-                    "Executable" = $filtered_executable
+                    
                     "Id" = $filter_id.ToString()
                     "ActionType" = $filter_action_type.ToString()
                     "Name" = $filter_name
+                    "Executable" = $filtered_executable
+                    "LayerKeyName" = $filter_layerkeyname
                 }
             }
         #}
@@ -105,7 +108,7 @@ $executables = @(
 
 $result = Get-WfpFilterData -executables $executables
 if ($result) {
-    $result
+    $result | Sort -Property Id | Format-table
 }
 else {
     Write-Output "No blocked executables from the list"
