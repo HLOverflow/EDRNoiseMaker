@@ -26,9 +26,10 @@ function Get-WfpFilterData {
 
     foreach ($filter in $wfp_filter) {
         $filter_fw = $filter | Format-FwFilter
-        foreach ($exe in $executables) {
-            if ($filter_fw | Select-String $exe) {
-                $filtered_executable = $filter.Conditions.Value.ContextValue         
+        #foreach ($exe in $executables) {
+            if ($filter_fw | Select-String "exe") {
+                #$filtered_executable = $filter.Conditions.Value.ContextValue
+                $filtered_executable = ($filter.Conditions | where -property FieldKeyName -eq FWPM_CONDITION_ALE_APP_ID | select -expandproperty Value); # print any exe that are blocked. 
                 $filter_id = $filter.FilterId  
                 $filter_action_type = $filter.ActionType
                 $filter_name = $filter.Name
@@ -40,7 +41,7 @@ function Get-WfpFilterData {
                     "Name" = $filter_name
                 }
             }
-        }
+        #}
     }
 
     return $result
@@ -56,6 +57,8 @@ if (-not (Install-ModuleIfNeeded -moduleName $moduleName)) {
 
 Import-Module -Name $moduleName
 
+$executables = @();
+<#
 $executables = @(
     "MsMpEng.exe",
     "MsSense.exe",
@@ -98,6 +101,8 @@ $executables = @(
     "fortiedr.exe",
     "sfc.exe"
     )
+#>
+
 $result = Get-WfpFilterData -executables $executables
 if ($result) {
     $result
